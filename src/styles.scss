@@ -4,9 +4,6 @@
 // Include custom cyanide theme
 @use "./theme/cyanide-theme" as cyanide;
 
-// Include Tailwind CSS v4 with @use instead of deprecated @import
-@use "tailwindcss";
-
 // Apply the cyanide theme to root
 html {
   height: 100%;

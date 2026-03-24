@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  /* Primary */
+  --color-primary: #aaf07f;
+
+  /* Backgrounds */
+  --color-dark-900: #181818;
+  --color-dark-800: #191919;
+
+  /* Text */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #bdbdbd;
+
+  /* Status */
+  --color-success: #00ffe3;
+  --color-info: #2196f3;
+  --color-warning: #ff9800;
+  --color-error: #f44336;
+
+  /* Border radius */
+  --radius-DEFAULT: 16px;
+
+  /* Font family */
+  --font-family-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
