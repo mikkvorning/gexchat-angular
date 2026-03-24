@@ -1,0 +1,89 @@
+// Include Angular Material theming
+@use "@angular/material" as mat;
+
+// Include custom cyanide theme
+@use "./theme/cyanide-theme" as cyanide;
+
+// Include Tailwind CSS v4 with @use instead of deprecated @import
+@use "tailwindcss";
+
+// Apply the cyanide theme to root
+html {
+  height: 100%;
+  @include cyanide.apply-cyanide-theme;
+
+  // Basic Material theme setup
+  @include mat.all-component-colors(
+    mat.define-theme(
+      (
+        color: (
+          primary: mat.$green-palette,
+          tertiary: mat.$blue-palette,
+        ),
+      )
+    )
+  );
+}
+
+body {
+  // Dark mode for the entire app
+  color-scheme: dark;
+
+  // Use Material system variables with sensible dark defaults
+  background-color: var(--mat-sys-surface, #181818);
+  color: var(--mat-sys-on-surface, #ffffff);
+  font: var(--mat-sys-body-medium, "Inter, Roboto, sans-serif");
+
+  // Reset user agent margin
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+
+  // Global font settings
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Roboto",
+    "Helvetica",
+    "Arial",
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+// Global scrollbar styling
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--primary-dark);
+  }
+}
+
+// Firefox scrollbar
+* {
+  scrollbar-color: var(--primary) var(--surface);
+  scrollbar-width: thin;
+}

@@ -1,0 +1,69 @@
+// Custom Cyanide Theme for Angular Material 3
+// Ported from gexchat React MUI theme
+
+@use "@angular/material" as mat;
+
+// Custom color tokens for Cyanide theme
+// Primary: Cyan-green (#aaf07f)
+// Surfaces: Dark backgrounds (#181818, #191919)
+
+$custom-colors: (
+  primary-green: (
+    0: #000000,
+    10: #1a3a00,
+    20: #27551f,
+    25: #307626,
+    30: #398a2f,
+    35: #42a038,
+    40: #4bb941,
+    50: #6ecf61,
+    60: #8dd77f,
+    70: #aaf07f,
+    80: #c2ff9f,
+    90: #dfffbe,
+    95: #efffda,
+    99: #f8ffe6,
+    100: #ffffff,
+  ),
+);
+
+// Export theme mixin for usage
+@mixin apply-cyanide-theme {
+  // CSS Custom Properties for theme colors
+  color-scheme: dark;
+
+  // Material system colors
+  --mat-sys-primary: #aaf07f;
+  --mat-sys-on-primary: #000000;
+  --mat-sys-primary-container: #1a3a00;
+  --mat-sys-on-primary-container: #dfffbe;
+
+  --mat-sys-secondary: #aaf07f;
+  --mat-sys-on-secondary: #000000;
+
+  --mat-sys-tertiary: #2196f3;
+  --mat-sys-on-tertiary: #ffffff;
+
+  --mat-sys-error: #f44336;
+  --mat-sys-on-error: #ffffff;
+
+  --mat-sys-background: #181818;
+  --mat-sys-on-background: #ffffff;
+
+  --mat-sys-surface: #191919;
+  --mat-sys-on-surface: #ffffff;
+  --mat-sys-surface-variant: #252525;
+  --mat-sys-on-surface-variant: #bdbdbd;
+
+  --mat-sys-outline: #8dd77f;
+  --mat-sys-outline-variant: #aaf07f;
+
+  // Custom app colors
+  --app-success: #00ffe3;
+  --app-info: #2196f3;
+  --app-warning: #ff9800;
+
+  // Scrollbar styling
+  scrollbar-color: #aaf07f #181818;
+  scrollbar-width: thin;
+}
