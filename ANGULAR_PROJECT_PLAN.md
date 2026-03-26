@@ -59,7 +59,7 @@ Suggested folder structure for `gexchat-angular`:
       - `app-store.module` or root `provideStore` config.
     - `features/`
       - `auth/` – login, signup, guest, verify-email pages/components.
-      - `shell/` – main layout (sidebar + main content), top-level container.
+      - `layout/` – main layout (sidebar + main content), top-level container.
       - `chat/` – chat view (messages, input, header, invitation states).
       - `sidebar/` – chat list, search, Gemini tile, user footer, settings trigger.
       - `settings/` – profile, appearance, notifications, privacy pages/dialog.

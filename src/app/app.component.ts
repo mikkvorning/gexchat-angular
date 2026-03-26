@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { Chat } from '@features/layout/chat/chat';
+import { Sidebar } from '@features/layout/sidebar/sidebar';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, MatCardModule, MatButtonModule],
+  imports: [RouterOutlet, MatCardModule, MatButtonModule, Chat, Sidebar],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
