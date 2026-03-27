@@ -2,24 +2,24 @@
 
 @theme {
   /* Primary */
-  --color-primary: #aaf07f;
+  --color-primary: var(--mat-sys-primary);
 
   /* Backgrounds */
-  --color-dark-900: #181818;
-  --color-dark-800: #191919;
+  --color-dark-900: var(--mat-sys-background);
+  --color-dark-800: var(--mat-sys-surface);
 
   /* Text */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #bdbdbd;
+  --color-text-primary: var(--mat-sys-on-surface);
+  --color-text-secondary: var(--mat-sys-on-surface-variant);
 
   /* Status */
-  --color-success: #00ffe3;
-  --color-info: #2196f3;
-  --color-warning: #ff9800;
-  --color-error: #f44336;
+  --color-success: var(--app-success);
+  --color-info: var(--app-info);
+  --color-warning: var(--app-warning);
+  --color-error: var(--app-error);
 
   /* Border radius */
-  --radius-DEFAULT: 16px;
+  --radius-DEFAULT: var(--app-shape-radius);
 
   /* Font family */
   --font-family-sans:

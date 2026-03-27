@@ -4,23 +4,24 @@
 // Include custom cyanide theme
 @use "./theme/cyanide-theme" as cyanide;
 
+$cyanide-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$green-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
+
 // Apply the cyanide theme to root
 html {
   height: 100%;
   @include cyanide.apply-cyanide-theme;
-
-  // Basic Material theme setup
-  @include mat.all-component-colors(
-    mat.define-theme(
-      (
-        color: (
-          theme-type: dark,
-          primary: mat.$green-palette,
-          tertiary: mat.$blue-palette,
-        ),
-      )
-    )
-  );
+  @include mat.all-component-themes($cyanide-theme);
 }
 
 body {
@@ -68,20 +69,78 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--surface);
+  background: var(--mat-sys-background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--primary);
+  background: var(--mat-sys-primary);
   border-radius: 4px;
 
   &:hover {
-    background: var(--primary-dark);
+    background: color-mix(in srgb, var(--mat-sys-primary) 80%, #000 20%);
   }
 }
 
 // Firefox scrollbar
 * {
-  scrollbar-color: var(--primary) var(--surface);
+  scrollbar-color: var(--mat-sys-primary) var(--mat-sys-background);
   scrollbar-width: thin;
+}
+
+// AppBar / Toolbar parity with MUI MuiAppBar colorPrimary override
+.mat-toolbar.mat-primary,
+.mat-mdc-toolbar.mat-primary {
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+}
+
+// Button parity with MUI MuiButton root override
+.mat-mdc-button-base {
+  padding-right: 16px;
+  padding-left: 16px;
+  min-width: unset;
+  white-space: normal;
+  border-radius: var(--app-shape-radius);
+}
+
+// Input parity with MUI MuiInputBase search cancel customization
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23aaf07f'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3C/svg%3E")
+    no-repeat 50% 50%;
+  cursor: pointer;
+}
+
+// Alert parity via snackbar panel classes (info/success/warning/error)
+.mat-mdc-snack-bar-container.app-info {
+  --mdc-snackbar-container-color: var(--mat-sys-surface);
+  --mdc-snackbar-supporting-text-color: var(--app-info);
+}
+
+.mat-mdc-snack-bar-container.app-success {
+  --mdc-snackbar-container-color: var(--mat-sys-surface);
+  --mdc-snackbar-supporting-text-color: var(--app-success);
+}
+
+.mat-mdc-snack-bar-container.app-warning {
+  --mdc-snackbar-container-color: var(--mat-sys-surface);
+  --mdc-snackbar-supporting-text-color: var(--app-warning);
+}
+
+.mat-mdc-snack-bar-container.app-error {
+  --mdc-snackbar-container-color: var(--mat-sys-surface);
+  --mdc-snackbar-supporting-text-color: var(--app-error);
+}
+
+// Global shape parity (16px)
+.mat-mdc-card,
+.mat-mdc-dialog-container .mdc-dialog__surface,
+.mat-mdc-menu-panel,
+.mat-mdc-snack-bar-container,
+.mat-drawer,
+.mat-drawer-container {
+  border-radius: var(--app-shape-radius);
 }
