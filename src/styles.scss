@@ -4,6 +4,8 @@
 // Include custom cyanide theme
 @use "./theme/cyanide-theme" as cyanide;
 
+// Theme instance used only to satisfy all-component-bases() API.
+// No color tokens are compiled from this — all colors come from --mat-sys-* CSS variables.
 $cyanide-theme: mat.define-theme(
   (
     color: (
@@ -20,8 +22,10 @@ $cyanide-theme: mat.define-theme(
 // Apply the cyanide theme to root
 html {
   height: 100%;
+  // Structural styles only — color tokens intentionally excluded.
+  // All visual theming is driven by --mat-sys-* CSS variables below.
+  @include mat.all-component-bases($cyanide-theme);
   @include cyanide.apply-cyanide-theme;
-  @include mat.all-component-themes($cyanide-theme);
 }
 
 body {
