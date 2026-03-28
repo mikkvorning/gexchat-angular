@@ -23,7 +23,8 @@ $cyanide-theme: mat.define-theme(
 html {
   height: 100%;
   // Structural styles only — color tokens intentionally excluded.
-  // All visual theming is driven by --mat-sys-* CSS variables below.
+  // All color theming is driven by --mat-sys-* CSS variables in apply-cyanide-theme.
+  // State-layer opacity tokens are manually set in apply-cyanide-overrides.
   @include mat.all-component-bases($cyanide-theme);
   @include cyanide.apply-cyanide-theme;
 }

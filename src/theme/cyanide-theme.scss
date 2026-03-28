@@ -65,6 +65,28 @@
     border-radius: var(--app-shape-radius);
   }
 
+  // State-layer opacity tokens are not emitted by all-component-bases().
+  // Token names in Angular Material v17+ use --mat-button-{variant}-* (not --mat-{variant}-button-*).
+  // Set them explicitly so hover/focus/pressed overlays behave like standard M3
+  // (8% on hover, 12% on focus/pressed) instead of defaulting to opacity 1 (solid black).
+  .mat-mdc-unelevated-button {
+    --mat-button-filled-hover-state-layer-opacity: 0.08;
+    --mat-button-filled-focus-state-layer-opacity: 0.12;
+    --mat-button-filled-pressed-state-layer-opacity: 0.12;
+  }
+
+  .mat-mdc-button {
+    --mat-button-text-hover-state-layer-opacity: 0.08;
+    --mat-button-text-focus-state-layer-opacity: 0.12;
+    --mat-button-text-pressed-state-layer-opacity: 0.12;
+  }
+
+  .mat-mdc-outlined-button {
+    --mat-button-outlined-hover-state-layer-opacity: 0.08;
+    --mat-button-outlined-focus-state-layer-opacity: 0.12;
+    --mat-button-outlined-pressed-state-layer-opacity: 0.12;
+  }
+
   // Search input: tinted cancel icon matching primary color.
   // Note: CSS variables cannot be used inside url(), so the primary hex is hardcoded here.
   input[type="search"]::-webkit-search-cancel-button {
