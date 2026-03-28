@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { Chat } from '@features/layout/chat/chat';
-import { Sidebar } from '@features/layout/sidebar/sidebar';
+import { Chat } from '@features/chat/chat-main/chat-main';
+import { Sidebar } from '@features/chat/sidebar/sidebar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 
 @Component({
