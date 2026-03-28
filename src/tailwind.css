@@ -2,7 +2,7 @@
 
 @theme {
   /*
-   * ⚠️ SYNC RULE: Every --mat-sys-* and --app-* token in src/theme/cyanide-theme.scss
+   * SYNC RULE: Every --mat-sys-* and --app-* token in src/theme/cyanide-theme.scss
    * must have a corresponding --color-sys-* / --color-app-* entry here.
    * Update this file whenever tokens are added or removed from cyanide-theme.scss.
    *
