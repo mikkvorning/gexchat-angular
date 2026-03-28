@@ -124,3 +124,28 @@
     border-radius: var(--app-shape-radius);
   }
 }
+
+// Global scrollbar styling
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--mat-sys-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--mat-sys-primary);
+  border-radius: 4px;
+
+  &:hover {
+    background: color-mix(in srgb, var(--mat-sys-primary) 80%, #000 20%);
+  }
+}
+
+// Firefox scrollbar
+* {
+  scrollbar-color: var(--mat-sys-primary) var(--mat-sys-background);
+  scrollbar-width: thin;
+}

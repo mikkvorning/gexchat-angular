@@ -64,32 +64,13 @@ html,
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
 }
 
-// Global scrollbar styling
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+app-root {
+  display: block;
+  height: 100%;
+  min-height: 100dvh;
 }
-
-::-webkit-scrollbar-track {
-  background: var(--mat-sys-background);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--mat-sys-primary);
-  border-radius: 4px;
-
-  &:hover {
-    background: color-mix(in srgb, var(--mat-sys-primary) 80%, #000 20%);
-  }
-}
-
-// Firefox scrollbar
-* {
-  scrollbar-color: var(--mat-sys-primary) var(--mat-sys-background);
-  scrollbar-width: thin;
-}
-
 // Cyanide component overrides (toolbar, buttons, inputs, snackbars, shape)
 @include cyanide.apply-cyanide-overrides;
