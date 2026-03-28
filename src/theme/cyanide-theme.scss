@@ -1,5 +1,9 @@
 // Custom Cyanide Theme for Angular Material 3
 // Ported from gexchat React MUI theme
+//
+// SYNC RULE: Every --mat-sys-* and --app-* token defined in apply-cyanide-theme
+// must have a corresponding --color-sys-* / --color-app-* entry in src/tailwind.css.
+// When adding or removing tokens here, update src/tailwind.css in the same change.
 
 // Export theme mixin for usage
 @mixin apply-cyanide-theme {
@@ -85,6 +89,13 @@
     --mat-button-outlined-hover-state-layer-opacity: 0.08;
     --mat-button-outlined-focus-state-layer-opacity: 0.12;
     --mat-button-outlined-pressed-state-layer-opacity: 0.12;
+  }
+
+  .mat-drawer {
+    --mat-sidenav-container-background-color: var(--mat-sys-surface-variant);
+    --mat-sidenav-container-text-color: var(--mat-sys-on-surface);
+    --mat-sidenav-container-shape: 0;
+    --mat-sidenav-container-divider-color: var(--mat-sys-outline-variant);
   }
 
   // Search input: tinted cancel icon matching primary color.
