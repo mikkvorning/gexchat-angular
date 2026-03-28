@@ -12,6 +12,6 @@ export class ChatInput {
   constructor(private readonly snackbar: SnackbarService) {}
 
   sendMessage() {
-    this.snackbar.show('Snack error!', 'error');
+    this.snackbar.show('Message sent', 'info');
   }
 }

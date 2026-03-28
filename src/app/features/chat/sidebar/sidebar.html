@@ -1,1 +1,23 @@
-<div class="bg-amber-500">Chat sidebar</div>
+<div class="sidebar p-4">
+  <div class="sidebar-search mb-4">
+    <h1 class="text-2xl font-bold">Search chats</h1>
+  </div>
+
+  <div class="sidebar-list flex-1 overflow-y-auto">
+    @for (contact of contacts; track contact.name; let i = $index ) {
+    <div class="sidebar-item">
+      <div
+        class="sidebar-item-avatar"
+        [style.background-color]="contact.avatar.color"
+        [style.color]="contact.avatar.textColor"
+      >
+        {{contact.name.charAt(0)}}
+      </div>
+      <div class="sidebar-item-content">
+        <h2>{{contact.name}}</h2>
+        <p>{{contact.lastMessage}}</p>
+      </div>
+    </div>
+    }
+  </div>
+</div>
