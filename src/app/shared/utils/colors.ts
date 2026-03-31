@@ -56,7 +56,7 @@ export const getRelativeLuminance = (hex: string) => {
  */
 export const shouldUseWhiteText = (backgroundHex: string) => {
   const L = getRelativeLuminance(backgroundHex);
-  return L < 0.5; // Use white text if background is dark
+  return L > 0.5; // Use white text if background is dark
 };
 
 /**
