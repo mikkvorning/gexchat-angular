@@ -69,26 +69,32 @@
     border-radius: var(--app-shape-radius);
   }
 
-  // State-layer opacity tokens are not emitted by all-component-bases().
-  // Token names in Angular Material v17+ use --mat-button-{variant}-* (not --mat-{variant}-button-*).
-  // Set them explicitly so hover/focus/pressed overlays behave like standard M3
-  // (8% on hover, 12% on focus/pressed) instead of defaulting to opacity 1 (solid black).
-  .mat-mdc-unelevated-button {
-    --mat-button-filled-hover-state-layer-opacity: 0.08;
-    --mat-button-filled-focus-state-layer-opacity: 0.12;
-    --mat-button-filled-pressed-state-layer-opacity: 0.12;
+  // Icon alignment fix for icon buttons
+  .mat-mdc-icon-button.mat-mdc-button-base {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  // Use primary green as the hover/focus/pressed ripple color for all button variants
+  .mat-mdc-icon-button {
+    --mat-icon-button-state-layer-color: var(--mat-sys-primary);
+
+    &:hover .mat-icon {
+      color: var(--mat-sys-primary);
+    }
   }
 
   .mat-mdc-button {
-    --mat-button-text-hover-state-layer-opacity: 0.08;
-    --mat-button-text-focus-state-layer-opacity: 0.12;
-    --mat-button-text-pressed-state-layer-opacity: 0.12;
+    --mat-button-text-state-layer-color: var(--mat-sys-primary);
+  }
+
+  .mat-mdc-unelevated-button {
+    --mat-button-filled-state-layer-color: var(--mat-sys-on-primary);
   }
 
   .mat-mdc-outlined-button {
-    --mat-button-outlined-hover-state-layer-opacity: 0.08;
-    --mat-button-outlined-focus-state-layer-opacity: 0.12;
-    --mat-button-outlined-pressed-state-layer-opacity: 0.12;
+    --mat-button-outlined-state-layer-color: var(--mat-sys-primary);
   }
 
   .mat-drawer {
@@ -96,6 +102,10 @@
     --mat-sidenav-container-text-color: var(--mat-sys-on-surface);
     --mat-sidenav-container-shape: 0;
     --mat-sidenav-container-divider-color: var(--mat-sys-outline-variant);
+  }
+
+  .mat-mdc-form-field {
+    --mat-form-field-outlined-container-shape: var(--app-shape-radius);
   }
 
   // Search input: tinted cancel icon matching primary color.
