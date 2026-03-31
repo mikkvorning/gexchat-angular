@@ -12,6 +12,7 @@ $cyanide-theme: mat.define-theme(
       theme-type: dark,
       primary: mat.$green-palette,
       tertiary: mat.$blue-palette,
+      use-system-variables: true,
     ),
     density: (
       scale: 0,
@@ -22,10 +23,10 @@ $cyanide-theme: mat.define-theme(
 // Apply the cyanide theme to root
 html {
   height: 100%;
-  // Structural styles only — color tokens intentionally excluded.
-  // All color theming is driven by --mat-sys-* CSS variables in apply-cyanide-theme.
-  // State-layer opacity tokens are manually set in apply-cyanide-overrides.
-  @include mat.all-component-bases($cyanide-theme);
+  // Emits both structural styles and all component-level color tokens (--mat-form-field-*,
+  // --mat-icon-button-*, etc.), wired to --mat-sys-* variables from the palette.
+  // apply-cyanide-theme then overrides specific --mat-sys-* values with cyanide brand colors.
+  @include mat.all-component-themes($cyanide-theme);
   @include cyanide.apply-cyanide-theme;
 }
 

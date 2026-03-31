@@ -1,5 +1,9 @@
 @reference "../../../../tailwind.css";
 
+:host {
+  background-color: var(--mat-sys-surface-variant);
+}
+
 .sidebar-item {
   @apply py-4 cursor-pointer hover:bg-sys-outline-variant flex flex-row gap-2 items-center;
 

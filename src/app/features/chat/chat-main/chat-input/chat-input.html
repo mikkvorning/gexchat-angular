@@ -1,5 +1,32 @@
-<div class="h-20 px-4 flex items-center justify-between">
-  <span>Type your message here...</span>
+<div class="p-4">
+  <div class="flex items-center justify-between gap-2">
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+      class="w-full"
+    >
+      <input
+        matInput
+        type="text"
+        placeholder="Type message..."
+        [(ngModel)]="messageValue"
+      />
+      @if (messageValue) {
+      <!-- Clear button -->
+      <button
+        matSuffix
+        matIconButton
+        aria-label="Clear"
+        (click)="messageValue=''"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+      }
+    </mat-form-field>
 
-  <button matButton="filled" (click)="sendMessage()">Send</button>
+    <!-- Send button -->
+    <button matIconButton aria-label="Send" (click)="sendMessage()">
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
 </div>
