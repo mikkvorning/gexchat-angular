@@ -46,6 +46,7 @@
   --color-app-success: var(--app-success);
   --color-app-warning: var(--app-warning);
   --color-app-error: var(--app-error);
+  --color-app-spacing: var(--app-spacing);
 
   /* Legacy aliases — kept for backward compatibility */
   --color-primary: var(--mat-sys-primary);
