@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, input, OnInit, output } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import {
@@ -12,7 +12,8 @@ import {
 } from '@angular/material/card';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { getFieldError, matches, rule } from '@shared/utils/validators';
+import { AuthCardConfig } from '@core/models/auth-form-config.model';
+import { getFieldError } from '@shared/utils/validators';
 
 @Component({
   selector: 'app-auth-card',
@@ -37,46 +38,58 @@ import { getFieldError, matches, rule } from '@shared/utils/validators';
     >
       <mat-card-header>
         <mat-card-title class="text-sys-primary py-2 font-bold!">
-          {{ title }}
+          {{ config().title }}
         </mat-card-title>
         <mat-card-subtitle>
-          {{ subtitle }}
+          {{ config().subtitle }}
         </mat-card-subtitle>
       </mat-card-header>
 
-      <!-- Should be made dynamically rendered with fields based on login/register/guest/verify form configs -->
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <mat-card-content>
-          <mat-form-field appearance="outline" class="w-full mb-6">
-            <mat-label>Email</mat-label>
-            <input matInput formControlName="email" type="email" />
-            <mat-error>{{ getError('email') }}</mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-full mb-6">
-            <mat-label>Password</mat-label>
-            <input matInput formControlName="password" type="password" />
-            <mat-error>{{ getError('password') }}</mat-error>
-          </mat-form-field>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="w-full">
+        <mat-card-content class="w-full">
+          @for (field of config().fields; track field.name) {
+            <mat-form-field appearance="outline" class="w-full mb-6">
+              <mat-label>{{ field.label }}</mat-label>
+              <input
+                matInput
+                [formControlName]="field.name"
+                [type]="field.type"
+              />
+              <mat-error>{{ getError(field.name) }}</mat-error>
+            </mat-form-field>
+          }
         </mat-card-content>
         <mat-card-actions>
           <div class="flex flex-col items-center gap-4 w-full mt-4">
             <button
               mat-flat-button
               type="submit"
-              [disabled]="isLoading || (loginForm.invalid && loginForm.touched)"
+              [disabled]="isLoading() || (form.invalid && form.touched)"
               class="w-full"
             >
-              Sign in
+              {{ config().submitLabel }}
             </button>
-            <button mat-stroked-button type="button" class="w-full">
-              Continue as guest
-            </button>
-            <p class="signup-link position-relative">
-              Don't have an account?
-              <a routerLink="/register" class="underline text-sys-primary"
-                >Sign up here</a
+            @if (config().secondaryButton; as secondary) {
+              <button
+                mat-stroked-button
+                type="button"
+                [routerLink]="secondary.routerLink"
+                class="w-full"
               >
-            </p>
+                {{ secondary.label }}
+              </button>
+            }
+            @if (config().footerLink; as footer) {
+              <p>
+                {{ footer.prefixText }}
+                <a
+                  [routerLink]="footer.routerLink"
+                  class="underline text-sys-primary"
+                >
+                  {{ footer.linkText }}
+                </a>
+              </p>
+            }
           </div>
         </mat-card-actions>
       </form>
@@ -84,39 +97,30 @@ import { getFieldError, matches, rule } from '@shared/utils/validators';
   `,
   styleUrls: ['./auth-card.scss'],
 })
-export class AuthCard {
+export class AuthCard implements OnInit {
   private fb = inject(FormBuilder);
-  isLoading = false;
 
-  title = 'Welcome to GexChat';
-  subtitle = 'Please sign in to continue';
+  config = input.required<AuthCardConfig>();
+  isLoading = input<boolean>(false);
+  formSubmit = output<Record<string, string>>();
 
-  loginForm = this.fb.group({
-    email: [
-      '',
-      [
-        rule(Validators.required, 'Email is required'),
-        rule(Validators.email, 'Please enter a valid email address'),
-      ],
-    ],
-    password: [
-      '',
-      [
-        rule(Validators.required, 'Password is required'),
-        rule(Validators.minLength(8), 'Password must be at least 8 characters'),
-        matches(/[A-Z]/, 'Password must contain at least one uppercase letter'),
-        matches(/[a-z]/, 'Password must contain at least one lowercase letter'),
-        matches(/[0-9]/, 'Password must contain at least one number'),
-      ],
-    ],
-  });
+  form!: FormGroup;
 
-  getError = (field: string) => getFieldError(this.loginForm, field);
+  ngOnInit(): void {
+    const controls: Record<string, [string, ReturnType<typeof Array>]> = {};
+    for (const field of this.config().fields) {
+      controls[field.name] = ['', field.validators];
+    }
+    this.form = this.fb.group(controls);
+  }
+
+  getError = (field: string) => getFieldError(this.form, field);
 
   onSubmit(): void {
-    if (this.loginForm.valid) {
-      this.isLoading = true;
-      // TODO: call auth service
+    if (this.form.valid) {
+      this.formSubmit.emit(this.form.value as Record<string, string>);
+    } else {
+      this.form.markAllAsTouched();
     }
   }
 }

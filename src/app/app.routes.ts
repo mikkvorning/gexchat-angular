@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { Login } from '@features/auth/login/login';
 import { Register } from '@features/auth/register/register';
 import { Verify } from '@features/auth/verify/verify';
+import { Guest } from '@features/auth/guest/guest';
 import { Chat } from '@features/chat/chat';
 
 export const routes: Routes = [
@@ -24,6 +25,10 @@ export const routes: Routes = [
   {
     path: 'verify',
     component: Verify,
+  },
+  {
+    path: 'guest',
+    component: Guest,
   },
   {
     path: '',
