@@ -27,6 +27,7 @@ html {
   // --mat-icon-button-*, etc.), wired to --mat-sys-* variables from the palette.
   // apply-cyanide-theme then overrides specific --mat-sys-* values with cyanide brand colors.
   @include mat.all-component-themes($cyanide-theme);
+  @include mat.typography-hierarchy($cyanide-theme);
   @include cyanide.apply-cyanide-theme;
 }
 

@@ -1,6 +1,7 @@
 {
   "css.lint.unknownAtRules": "ignore",
   "scss.lint.unknownAtRules": "ignore",
+  "tailwindCSS.suggestions": false,
   "tailwindCSS.includeLanguages": {
     "scss": "css"
   }

@@ -11,6 +11,6 @@ import { ChatMain } from './chat-main/chat-main';
   selector: 'app-chat',
   imports: [MatDrawerContainer, MatDrawer, Sidebar, MatDrawerContent, ChatMain],
   templateUrl: './chat.html',
-  styleUrl: './chat.css',
+  styleUrl: './chat.scss',
 })
 export class Chat {}
