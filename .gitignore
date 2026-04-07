@@ -40,3 +40,8 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# env files (can opt-in for committing if needed)
+.env*
+/src/environments/environment.ts
+/src/environments/environment.prod.ts

@@ -1,6 +1,8 @@
 # Gexchat Angular Rewrite – Project Plan
 
-_Last updated: 2026-03-24_
+_Last updated: 2026-04-07_
+
+> **Status legend**: ✅ Done · 🔄 In progress · ⬜ Not started
 
 This document describes the architecture and implementation plan for recreating the **gexchat** Next.js + React + MUI + Firebase app in **Angular 21+** with modern, commercially relevant patterns.
 
@@ -47,30 +49,25 @@ Suggested folder structure for `gexchat-angular`:
 - `src/`
   - `app/`
     - `core/`
-      - `models/` – TS interfaces for users, chats, messages, etc.
-      - `services/` – cross-cutting services (auth, chat, gemini, user search, error mapping).
-      - `guards/` – route guards (auth, email verification).
-      - `interceptors/` – HTTP interceptors (API error mapping, auth headers if needed).
-      - `firebase/` – AngularFire initialization and providers.
-    - `store/`
-      - `auth/` – NgRx feature: auth state, actions, reducers, selectors, effects.
-      - `chat/` – NgRx feature: chats, messages, invitations, typing.
-      - `ui/` – NgRx feature: search value, selected chat ID, dialogs, snackbars.
-      - `app-store.module` or root `provideStore` config.
+      - `models/` ✅ – TS interfaces. Currently: `auth-form-config.model.ts`. Pending: `user.model.ts`, chat/message models.
+      - `services/` ✅ partial – `snackbar.service.ts` done. Pending: `auth.service.ts`, `chat.service.ts`, etc.
+      - `guards/` ⬜ – route guards (auth, email verification).
+      - `interceptors/` ⬜ – HTTP interceptors (API error mapping).
+      - `firebase/` ⬜ – AngularFire providers (next step).
+    - `store/` ⬜ – flat files, not subdirectories. Will be `auth.store.ts`, `chat.store.ts`, `ui.store.ts`.
     - `features/`
-      - `auth/` – login, signup, guest, verify-email pages/components.
-      - `chat/` – main layout (sidebar + main content), top-level container.
-        - `chat-main/` – chat view (messages, input, header, invitation states).
-        - `chat-input/` – chat input (input field, submit button).
-      - `sidebar/` – chat list, search, Gemini tile, user footer, settings trigger.
-        - `settings/` – profile, appearance, notifications, privacy pages/dialog.
-      - `gemini/` – Gemini bot view and logic.
+      - `auth/` ✅ – `auth-card/` (config-driven card), `login/`, `register/`, `guest/`, `verify/`. Centralised `auth.configs.ts`.
+      - `chat/` 🔄 – shell layout done (sidenav, sidebar, chat-main, chat-input, chat-messages stubs).
+        - `chat-main/` 🔄 – layout done, logic pending.
+        - `chat-input/` 🔄 – UI done, send logic pending.
     - `shared/`
-      - `components/` – reusable UI components (buttons, avatars, layout wrappers like CenterContent).
-      - `pipes/` – common pipes (e.g., date/time formatting if needed).
-      - `directives/` – scroll/auto-focus helpers if useful.
-  - `environments/` – `environment.ts`, `environment.development.ts` with Firebase + API base URLs.
-  - `styles.scss` – global theme imports, CSS variables, scrollbars, base layout.
+      - `components/` ⬜
+      - `pipes/` ⬜
+      - `utils/` ✅ – `validators.ts` (rule/matches/getFieldError), `colors.ts`.
+  - `environments/` ✅ – `environment.ts` and `environment.prod.ts` with Firebase config + `apiBaseUrl`.
+  - `styles.scss` ✅ – Material theme, typography hierarchy, cyanide theme overrides, global layout.
+  - `theme/cyanide-theme.scss` ✅ – single source of truth for all design tokens.
+  - `tailwind.css` ✅ – `@theme` block mirrors all `--mat-sys-*` / `--app-*` tokens.
 
 This structure mirrors the logical separation in the React app (auth, chat, settings, Gemini, shared utilities) but uses Angular DI and NgRx instead of React Context + React Query.
 
@@ -127,12 +124,11 @@ This structure mirrors the logical separation in the React app (auth, chat, sett
 
 ## 6. Domain Models
 
-Create TypeScript interfaces in `core/models` closely mirroring the current `types.ts`:
-
-- Users:
+- ✅ `auth-form-config.model.ts` — `AuthFieldConfig`, `AuthCardConfig` for config-driven auth forms.
+- ⬜ `user.model.ts` — port from React `types.ts` (next step, required for guest login):
   - `OnlineStatus = 'online' | 'offline' | 'away'`.
   - `BaseUser` with `id`, `displayName`, `username`, optional `avatarUrl`, `status`.
-  - `CurrentUser` extending `BaseUser` with `createdAt`, `chats`, `blocked`, `privacy`, `notifications`, `friends`.
+  - `CurrentUser` extending `BaseUser` with `createdAt`, `chats`, `blocked`, `privacy`, `notifications`, `friends`, `isGuest: boolean`.
 
 - Chats & Messages:
   - `AcceptStatus = 'ACCEPTED' | 'PENDING' | 'REJECTED'`.
@@ -148,30 +144,20 @@ These interfaces should match Firestore shapes enforced by existing rules and do
 
 ## 7. Core Services
 
-### 7.1 AuthService (Client Auth)
+### 7.1 AuthService ⬜
 
-Responsibilities:
+A single `AuthService` combining client Firebase auth and HTTP API calls:
 
-- Wrap AngularFire Auth for:
-  - Email/password signup and login.
-  - Guest login (via custom token if still supported, or a revised guest strategy).
-  - Email verification (sending verification emails and refreshing tokens).
-- Expose auth state as Observables or signals:
-  - `currentUser$`, `loading$`, `error$`, `emailVerified$`, `isGuest$`.
-- Centralize Firebase-specific logic that was previously spread across hooks like `useAuth`, `useEmailVerification`, `useResendVerification`, and `AuthProvider`.
+- `loginAsGuest(username)` — POST `{ authType: 'guest', nickname }` to `environment.apiBaseUrl + '/auth/login'`, receives custom token, calls `signInWithCustomToken(auth, customToken)`, returns mapped `AppUser`.
+- `login(email, password)` — POST `{ authType: 'login', email, password }`, establish Firebase session.
+- `register(email, password)` — POST `{ authType: 'signup', email, password }`.
+- `logout()` — POST `/auth/logout`, then `signOut(auth)`.
+- `resendVerification()` — POST `/auth/resend-verification`.
+- Uses `HttpClient` for all backend calls. Firebase client SDK (`@angular/fire/auth`) for session management only.
 
-### 7.2 AuthApiService (Backend Auth API)
+### 7.2 SnackbarService ✅
 
-Responsibilities (talking to existing Next APIs or a future backend):
-
-- Mirror the client wrapper in the React app:
-  - `authenticate(request)` → `/auth/login`.
-  - `verifySession()` → `/auth/verify-session`.
-  - `logout()` → `/auth/logout`.
-  - `resendVerification()` → `/auth/resend-verification`.
-- Use Angular `HttpClient` and interceptors to:
-  - Map backend error payloads into a consistent `ApiError` shape.
-  - Optionally attach auth headers if needed later.
+- ✅ `snackbar.service.ts` — semantic wrapper around `MatSnackBar` with `info`, `success`, `warning`, `error` methods and consistent defaults.
 
 ### 7.3 ChatService (Firestore + Domain Logic)
 
@@ -217,15 +203,17 @@ Responsibilities:
 
 ## 8. Routing and Guards
 
-### 8.1 Routes
+### 8.1 Routes ✅
 
-Define main routes to mirror the existing app:
+Current routes in `app.routes.ts`:
 
-- `/login` – login/signup/guest entry.
-- `/verify` – email verification page.
-- `/` – main authenticated shell (sidebar + chat or Gemini view).
+- ✅ `/login` — login form.
+- ✅ `/register` (alias: `/signup`) — registration form.
+- ✅ `/guest` — guest login form.
+- ✅ `/verify` — email verification page.
+- ✅ `/` — main authenticated shell (Chat component).
 
-### 8.2 Guards
+### 8.2 Guards ⬜
 
 - `AuthGuard`:
   - Checks `AuthService` / `auth` store for authentication.
@@ -250,25 +238,26 @@ Define main routes to mirror the existing app:
 
 All stores use `signalStore()` from `@ngrx/signals`. Reads are `computed()` or direct signal access. Mutations go through `withMethods()`. Async operations use `rxMethod()` for RxJS interop.
 
-### 9.1 Auth Store
+### 9.1 Auth Store ⬜
 
 ```ts
 export const AuthStore = signalStore(
   { providedIn: "root" },
-  withState<AuthState>({ user: null, isGuest: false, emailVerified: false, loading: false, error: null }),
-  withComputed(({ user, emailVerified }) => ({
+  withState<AuthState>({ user: null, isLoading: false, error: null }),
+  withComputed(({ user }) => ({
     isAuthenticated: computed(() => !!user()),
-    needsVerification: computed(() => !!user() && !emailVerified()),
+    isGuest: computed(() => !!user()?.isGuest),
+    needsVerification: computed(() => !!user() && !user()!.isGuest && !user()!.emailVerified),
   })),
-  withMethods((store, authService = inject(AuthService)) => ({
-    login: rxMethod<LoginRequest>(pipe(switchMap((req) => authService.login(req)))),
+  withMethods((store, authService = inject(AuthService), router = inject(Router)) => ({
+    loginAsGuest: rxMethod<string>(pipe(switchMap((username) => authService.loginAsGuest(username)))),
     logout: rxMethod<void>(pipe(switchMap(() => authService.logout()))),
   })),
 );
 ```
 
-- Coordinates `AuthService` (Firebase) and `AuthApiService` (backend).
-- Triggers Router navigation as a side-effect inside `withMethods`.
+- Single `AuthService` handles both Firebase client and backend API.
+- Navigation side-effects triggered inside `withMethods` via `inject(Router)`.
 
 ### 9.2 Chat Store
 
@@ -287,14 +276,13 @@ export const AuthStore = signalStore(
 
 ## 10. Feature Areas
 
-### 10.1 Auth Feature (Login / Verify)
+### 10.1 Auth Feature ✅ (UI) / ⬜ (logic)
 
-- Components:
-  - Login/signup/guest form using Angular Reactive Forms.
-  - Verification page (resend email, show status) modeled on the existing verification screen.
-- Logic:
-  - Use NgRx effects to call `AuthService`/`AuthApiService` and update `auth` state.
-  - Route guards for preventing verified users from returning to `/login` / `/verify` unnecessarily.
+- ✅ `AuthCard` — reusable, config-driven card component. Accepts `AuthCardConfig` input (signals API), dynamically builds a `FormGroup` from field configs, emits `formSubmit` output. Purely presentational — no auth service calls inside.
+- ✅ `auth.configs.ts` — centralised config file exporting `LOGIN_CONFIG`, `REGISTER_CONFIG`, `GUEST_CONFIG`, `VERIFY_CONFIG`. Each config defines title, subtitle, fields (with validators), submit label, optional secondary button, optional footer link.
+- ✅ Route components (`Login`, `Register`, `Guest`, `Verify`) — thin wrappers that pass config and handle `(formSubmit)` output (currently logging to console).
+- ⬜ Actual auth service calls from `(formSubmit)` handlers.
+- ⬜ Route guards preventing re-entry to auth routes when already logged in.
 
 ### 10.2 Shell and Layout
 
@@ -376,35 +364,101 @@ export const AuthStore = signalStore(
 
 ## 13. Implementation Order
 
-### Phase 0: Scaffold & Platform Readiness (do first, gate everything else on this)
+### Phase 0: Scaffold & Platform Readiness ✅
 
-1. **Angular 21 baseline**: Update `package.json` to `@angular/core@^21.2.0`, replace `@angular-devkit/build-angular` with `@angular/build@^21.2.3`, set `typescript: ~5.9.2`, `zone.js: ~0.15.0`. Delete `node_modules` + `package-lock.json`, run `npm install`.
-2. **Verify Angular baseline**: `npm run build` and `npm test` must pass on the default scaffold before adding any library.
-3. **Angular Material**: `ng add @angular/material@21` — accepts prompts for theme/typography/animations.
-4. **Tailwind CSS v4**: `npm install -D tailwindcss @tailwindcss/postcss`, create `postcss.config.mjs`, add `@import "tailwindcss"` to `styles.scss`.
-5. **NgRx Signals**: `npm install @ngrx/signals@21`.
-6. **AngularFire**: `npm install @angular/fire@20 firebase` (use `--legacy-peer-deps` if needed for peer conflict with Angular 21).
-7. **ESLint**: `ng add @angular-eslint/schematics`.
-8. **Path aliases**: Add `@core`, `@shared`, `@features/*` to `tsconfig.json` paths.
-9. **Clean app shell**: Replace default `app.component.html` placeholder with a minimal `<router-outlet>`, clear `app.component.scss`, set up `app.routes.ts` stub.
-10. **Gate check**: `npm run build`, `npm run lint`, `npm test` all pass.
+1. ✅ **Angular 21 baseline** — `@angular/core@^21.2.0`, `@angular/build@^21.2.3`, `typescript: ~5.9.2`, `zone.js: ~0.15.0`.
+2. ✅ **Verify Angular baseline** — `npm run build` and `npm test` passed.
+3. ✅ **Angular Material** — `@angular/material@21` with cyanide dark M3 theme.
+4. ✅ **Tailwind CSS v4** — `@tailwindcss/postcss`, `tailwind.css` with token sync.
+5. ✅ **NgRx Signals** — `@ngrx/signals@21` installed.
+6. ✅ **AngularFire** — `@angular/fire@20` and `firebase@12` installed.
+7. ✅ **Path aliases** — `@core`, `@shared`, `@features/*` in `tsconfig.json`.
+8. ✅ **Clean app shell** — `<router-outlet>` only, routes defined.
 
-### Phase 1: Auth & Core
+### Phase 1: Auth & Core 🔄
 
-11. Set up environments, Firebase config, and core theming (Material dark theme + Tailwind tokens).
-12. Implement `AuthService`, `AuthApiService`, basic login page, route guards.
-13. Implement `AuthStore` (Signal Store) and wire login/verify/logout flows.
+9. ✅ **Theming** — `cyanide-theme.scss`, Tailwind token sync, `mat.typography-hierarchy()`.
+10. ✅ **Auth UI** — Config-driven `AuthCard`, all four route components, centralised `auth.configs.ts`.
+11. ✅ **`SnackbarService`** — semantic Material snackbar wrapper.
+12. ✅ **Environment config** — Firebase keys and `apiBaseUrl` set in `environment.ts`.
+13. ⬜ **Firebase providers** — `firebase.providers.ts` + wire into `app.config.ts`.
+14. ⬜ **`user.model.ts`** — `BaseUser`, `CurrentUser`, `OnlineStatus`.
+15. ⬜ **`AuthService`** — HTTP + Firebase client auth.
+16. ⬜ **`AuthStore`** — NgRx Signal Store for auth state.
+17. ⬜ **Wire Guest login** — `Guest` component calls store, navigates to `/`.
+18. ⬜ **Route guards** — `AuthGuard`, `EmailVerifiedGuard`.
 
-### Phase 2: Shell & Chat
+→ See **Section 14** for the detailed Guest Login implementation plan.
 
-14. Implement shell layout and sidebar using mocked data.
-15. Implement `ChatService` and `ChatStore` (load chats, select chat, view messages).
-16. Add message sending, unread counts, typing indicators.
+### Phase 2: Shell & Chat ⬜
 
-### Phase 3: Features
+19. ⬜ Implement sidebar with mocked chat list.
+20. ⬜ `ChatService` + `ChatStore` — load chats, select chat, view messages.
+21. ⬜ Message sending, unread counts, typing indicators.
 
-17. Implement Gemini feature (service + UI).
-18. Implement settings, user search, and chat creation flows.
-19. Refine UI, animations, error handling, and cover missing flows.
+### Phase 3: Features ⬜
 
-This plan is a living document — update it as you refine decisions, replace the backend, or adjust scope.
+22. ⬜ Gemini feature (service + UI).
+23. ⬜ Settings, user search, chat creation.
+24. ⬜ Animations, refined error handling, missing flows.
+
+This plan is a living document — update it as decisions are refined or scope changes.
+
+---
+
+## 14. Guest Login Implementation Plan ⬜
+
+> **Goal**: wire up the first real auth flow end-to-end. Angular → Next.js API → Firebase Admin → custom token → Firebase session → navigate to `/`.
+
+### Stack
+
+| Layer           | Technology                      | Notes                                            |
+| --------------- | ------------------------------- | ------------------------------------------------ |
+| HTTP            | `HttpClient` (Angular built-in) | POST to `environment.apiBaseUrl + '/auth/login'` |
+| Firebase client | `@angular/fire/auth`            | `signInWithCustomToken(auth, token)`             |
+| State           | `@ngrx/signals` Signal Store    | `AuthStore` — `user`, `isLoading`, `error`       |
+
+### Steps
+
+**Step 1 — Firebase providers** (`src/app/core/firebase/firebase.providers.ts`)
+
+- Export `provideFirebaseApp(() => initializeApp(environment.firebase))`, `provideAuth(() => getAuth())`, `provideFirestore(() => getFirestore())`.
+
+**Step 2 — Bootstrap** (`src/app/app.config.ts`)
+
+- Add `provideHttpClient()`, `provideFirebaseApp(...)`, `provideAuth(...)`, `provideFirestore(...)`.
+
+**Step 3 — User model** (`src/app/core/models/user.model.ts`)
+
+- Port `OnlineStatus`, `BaseUser`, `CurrentUser` from React `types.ts`. Add `isGuest: boolean` to `CurrentUser`.
+
+**Step 4 — AuthService** (`src/app/core/services/auth.service.ts`)
+
+- `inject(HttpClient)` + `inject(Auth)` from `@angular/fire/auth`.
+- `loginAsGuest(username: string): Observable<CurrentUser>` — POST `{ authType: 'guest', nickname: username }`, `signInWithCustomToken`, map to `CurrentUser`.
+- `logout(): Observable<void>` — POST `/auth/logout`, then `signOut(auth)`.
+
+**Step 5 — AuthStore** (`src/app/store/auth.store.ts`)
+
+- `signalStore({ providedIn: 'root' })` with `withState({ user: null, isLoading: false, error: null })`.
+- `withComputed`: `isAuthenticated`, `isGuest`, `needsVerification`.
+- `withMethods`: `loginAsGuest(username)` via `rxMethod`, `logout()` via `rxMethod`.
+
+**Step 6 — Guest component** (`src/app/features/auth/guest/guest.ts`)
+
+- Inject `AuthStore` and `Router`.
+- In `onSubmit(value)`: call `authStore.loginAsGuest(value['username'])`, on success navigate to `/`.
+- Bind `[isLoading]="authStore.isLoading()"` to `<app-auth-card>`.
+
+**Step 7 — Chat home** (`src/app/features/chat/chat.ts` or `chat.html`)
+
+- Inject `AuthStore`, show `{{ authStore.user()?.displayName }} is now logged in` while user is set and no chat is selected.
+
+### Verification checklist
+
+- [ ] Entering a username on `/guest` and submitting calls the Next.js API.
+- [ ] A Firebase anonymous-style user is created with the given display name.
+- [ ] App navigates to `/` and shows `{username} is now logged in`.
+- [ ] `AuthStore.user()` is populated with a `CurrentUser` object.
+- [ ] `AuthStore.isLoading()` is `true` during the request and `false` after.
+- [ ] On error, `AuthStore.error()` is set and a snackbar is shown.

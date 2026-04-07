@@ -4,12 +4,12 @@
 export const environment = {
   production: false,
   firebase: {
-    apiKey: 'REPLACE_WITH_YOUR_API_KEY',
-    authDomain: 'REPLACE_WITH_YOUR_AUTH_DOMAIN',
-    projectId: 'REPLACE_WITH_YOUR_PROJECT_ID',
-    storageBucket: 'REPLACE_WITH_YOUR_STORAGE_BUCKET',
-    messagingSenderId: 'REPLACE_WITH_YOUR_MESSAGING_SENDER_ID',
-    appId: 'REPLACE_WITH_YOUR_APP_ID',
+    apiKey: 'AIzaSyBP_2pICrMyetQxSsfSxy47Dh-FIOYuRUg',
+    authDomain: 'gexchat.firebaseapp.com',
+    projectId: 'gexchat',
+    storageBucket: 'gexchat.firebasestorage.app',
+    messagingSenderId: '624887959541',
+    appId: '1:624887959541:web:e46ecf90ea24dfdcaa5abc',
   },
   apiBaseUrl: 'http://localhost:3000/api',
 };
