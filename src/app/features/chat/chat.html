@@ -3,6 +3,12 @@
     <app-sidebar />
   </mat-drawer>
   <mat-drawer-content>
+    @if (authStore.isAuthenticated()) {
+    <p class="p-2 text-xs text-sys-on-surface-variant">
+      Logged in as <strong>{{ authStore.user()?.displayName }}</strong>
+      {{ authStore.isGuest() ? '(guest)' : '' }}
+    </p>
+    }
     <app-chat-main />
   </mat-drawer-content>
 </mat-drawer-container>

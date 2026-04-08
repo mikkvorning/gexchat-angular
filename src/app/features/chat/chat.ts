@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   MatDrawerContainer,
   MatDrawer,
@@ -6,6 +6,7 @@ import {
 } from '@angular/material/sidenav';
 import { Sidebar } from './sidebar/sidebar';
 import { ChatMain } from './chat-main/chat-main';
+import { AuthStore } from '../../store/auth.store';
 
 @Component({
   selector: 'app-chat',
@@ -13,4 +14,6 @@ import { ChatMain } from './chat-main/chat-main';
   templateUrl: './chat.html',
   styleUrl: './chat.scss',
 })
-export class Chat {}
+export class Chat {
+  readonly authStore = inject(AuthStore);
+}
